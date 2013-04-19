@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 1999-2013 Petko Manolov - Petkan (petkan@nucleusys.com)
+ * Copyright (c) 1999-2013 Petko Manolov (petkan@nucleusys.com)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as published
@@ -13,7 +13,6 @@
 #define	HAS_HOME_PNA		0x40000000
 
 #define	PEGASUS_MTU		1536
-#define	RX_SKBS			4
 
 #define	EPROM_WRITE		0x01
 #define	EPROM_READ		0x02
