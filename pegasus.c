@@ -27,7 +27,7 @@
  *		v0.5.5	rx socket buffers are in a pool and the their allocation
  *			is out of the interrupt routine.
  *		...
- *		v0.9.1	simplified [get|set]_register(s), async update registers
+ *		v0.9.3	simplified [get|set]_register(s), async update registers
  *			logic revisited, receive skb_pool removed.
  */
 
@@ -48,7 +48,7 @@
 /*
  * Version Information
  */
-#define DRIVER_VERSION "v0.9.3 (2013/04/09)"
+#define DRIVER_VERSION "v0.9.3 (2013/04/25)"
 #define DRIVER_AUTHOR "Petko Manolov <petkan@nucleusys.com>"
 #define DRIVER_DESC "Pegasus/Pegasus II USB Ethernet driver"
 
@@ -253,8 +253,9 @@ static int mdio_read(struct net_device *dev, int phy_id, int loc)
 static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
 {
 	pegasus_t *pegasus = netdev_priv(dev);
+	__u16 data = val;
 
-	write_mii_word(pegasus, phy_id, loc, (__u16 *)&val);
+	write_mii_word(pegasus, phy_id, loc, &data);
 }
 
 static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
@@ -722,7 +723,7 @@ static inline void get_interrupt_interval(pegasus_t *pegasus)
 				   "intr interval changed from %ums to %ums\n",
 				   interval, 0x80);
 			interval = 0x80;
-			data = (data & 0x00FF) | ((u16) interval << 8);
+			data = (data & 0x00FF) | ((u16)interval << 8);
 #ifdef PEGASUS_WRITE_EEPROM
 			write_eprom_word(pegasus, 4, data);
 #endif
@@ -760,22 +761,24 @@ static void unlink_all_urbs(pegasus_t *pegasus)
 
 static int alloc_urbs(pegasus_t *pegasus)
 {
+	int res = -ENOMEM;
+
 	pegasus->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pegasus->rx_urb) {
-		return 0;
+		return res;
 	}
 	pegasus->tx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pegasus->tx_urb) {
 		usb_free_urb(pegasus->rx_urb);
-		return 0;
+		return res;
 	}
 	pegasus->intr_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pegasus->intr_urb) {
 		usb_free_urb(pegasus->tx_urb);
 		usb_free_urb(pegasus->rx_urb);
-		return 0;
+		return res;
 	}
-	return 1;
+	return 0;
 }
 
 static int pegasus_open(struct net_device *net)
@@ -984,7 +987,6 @@ static void pegasus_set_multicast(struct net_device *net)
 	} else {
 		pegasus->eth_regs[EthCtrl0] &= ~RX_MULTICAST;
 		pegasus->eth_regs[EthCtrl2] &= ~RX_PROMISCUOUS;
-		netif_dbg(pegasus, link, net, "general mode\n");
 	}
 	update_eth_regs_async(pegasus);
 }
@@ -1097,7 +1099,8 @@ static int pegasus_probe(struct usb_interface *intf,
 	pegasus = netdev_priv(net);
 	pegasus->dev_index = dev_index;
 
-	if (!alloc_urbs(pegasus)) {
+	res = alloc_urbs(pegasus);
+	if (res < 0) {
 		dev_err(&intf->dev, "can't allocate %s\n", "urbs");
 		goto out1;
 	}
