@@ -510,8 +510,7 @@ static void read_bulk_callback(struct urb *urb)
 	if (pegasus->flags & PEGASUS_UNPLUG)
 		return;
 
-	pegasus->rx_skb = __netdev_alloc_skb_ip_align(pegasus->net,
-						      PEGASUS_MTU, GFP_ATOMIC);
+	pegasus->rx_skb = netdev_alloc_skb_ip_align(pegasus->net, PEGASUS_MTU);
 	if (pegasus->rx_skb == NULL)
 		goto tl_sched;
 goon:
@@ -545,9 +544,7 @@ static void rx_fixup(unsigned long data)
 		if (pegasus->rx_skb)
 			goto try_again;
 	if (pegasus->rx_skb == NULL)
-		pegasus->rx_skb = __netdev_alloc_skb_ip_align(pegasus->net,
-							      PEGASUS_MTU,
-							      GFP_ATOMIC);
+		pegasus->rx_skb = netdev_alloc_skb_ip_align(pegasus->net, PEGASUS_MTU);
 	if (pegasus->rx_skb == NULL) {
 		netif_warn(pegasus, rx_err, pegasus->net, "low on memory\n");
 		tasklet_schedule(&pegasus->rx_tl);
