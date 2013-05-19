@@ -1220,25 +1220,25 @@ static int pegasus_resume(struct usb_interface *intf)
 }
 
 static const struct net_device_ops pegasus_netdev_ops = {
-	.ndo_open = pegasus_open,
-	.ndo_stop = pegasus_close,
-	.ndo_do_ioctl = pegasus_ioctl,
-	.ndo_start_xmit = pegasus_start_xmit,
-	.ndo_set_rx_mode = pegasus_set_multicast,
-	.ndo_get_stats = pegasus_netdev_stats,
-	.ndo_tx_timeout = pegasus_tx_timeout,
-	.ndo_change_mtu = eth_change_mtu,
-	.ndo_set_mac_address = eth_mac_addr,
-	.ndo_validate_addr = eth_validate_addr,
+	.ndo_open		= pegasus_open,
+	.ndo_stop		= pegasus_close,
+	.ndo_do_ioctl		= pegasus_ioctl,
+	.ndo_start_xmit		= pegasus_start_xmit,
+	.ndo_set_rx_mode	= pegasus_set_multicast,
+	.ndo_get_stats		= pegasus_netdev_stats,
+	.ndo_tx_timeout		= pegasus_tx_timeout,
+	.ndo_change_mtu		= eth_change_mtu,
+	.ndo_set_mac_address	= eth_mac_addr,
+	.ndo_validate_addr	= eth_validate_addr,
 };
 
 static struct usb_driver pegasus_driver = {
-	.name = driver_name,
-	.probe = pegasus_probe,
-	.disconnect = pegasus_disconnect,
-	.id_table = pegasus_ids,
-	.suspend = pegasus_suspend,
-	.resume = pegasus_resume,
+	.name		= driver_name,
+	.probe		= pegasus_probe,
+	.disconnect	= pegasus_disconnect,
+	.id_table	= pegasus_ids,
+	.suspend	= pegasus_suspend,
+	.resume		= pegasus_resume,
 	.disable_hub_initiated_lpm = 1,
 };
 
