@@ -97,18 +97,18 @@ typedef struct pegasus {
 	struct sk_buff		*rx_skb;
 	int			chip;
 	unsigned char		intr_buff[8];
-	__u8			tx_buff[PEGASUS_MTU];
-	__u8			eth_regs[4];
-	__u8			phy;
-	__u8			gpio_res;
+	u8			tx_buff[PEGASUS_MTU];
+	u8			eth_regs[4];
+	u8			phy;
+	u8			gpio_res;
 } pegasus_t;
 
 
 struct usb_eth_dev {
 	char	*name;
-	__u16	vendor;
-	__u16	device;
-	__u32	private; /* LSB is gpio reset value */
+	u16	vendor;
+	u16	device;
+	u32	private; /* LSB is gpio reset value */
 };
 
 #define	VENDOR_3COM		0x0506
