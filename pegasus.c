@@ -786,9 +786,7 @@ static int pegasus_open(struct net_device *net)
 	int res = -ENOMEM;
 
 	if (pegasus->rx_skb == NULL)
-		pegasus->rx_skb = __netdev_alloc_skb_ip_align(pegasus->net,
-							      PEGASUS_MTU,
-							      GFP_KERNEL);
+		pegasus->rx_skb = netdev_alloc_skb_ip_align(pegasus->net, PEGASUS_MTU);
 	if (!pegasus->rx_skb)
 		goto exit;
 	res = set_registers(pegasus, EthID, 6, net->dev_addr);
@@ -1239,7 +1237,6 @@ static struct usb_driver pegasus_driver = {
 	.id_table	= pegasus_ids,
 	.suspend	= pegasus_suspend,
 	.resume		= pegasus_resume,
-	.disable_hub_initiated_lpm = 1,
 };
 
 static void __init parse_id(char *id)
